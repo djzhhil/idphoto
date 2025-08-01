@@ -1,4 +1,4 @@
 tencent:
-  secret-id: id
-  secret-key: key
+  secret-id: ${TENCENT_SECRET_ID}
+  secret-key: ${TENCENT_SECRET_KEY}
   region: ap-beijing
