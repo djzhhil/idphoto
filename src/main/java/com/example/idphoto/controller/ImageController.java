@@ -25,33 +25,25 @@ public class ImageController {
     @Autowired
     private ImageProcessingService imageProcessingService;
 
-    //旧方法
+    // 原有方法保持不变
     @PostMapping("/remove-bg")
     public ImageResponse processImage(@RequestBody ImageRequest request) {
         try {
-            // 1. 去掉 data:image/png;base64, 前缀
             String base64Image = request.getImage().split(",")[1];
-
-            // 2. 调用腾讯云服务进行人像抠图（返回透明背景 PNG）
             byte[] transparentImageBytes = tencentClientService.getPortraitMask(base64Image);
-
-            // 3. 读取为 BufferedImage
             BufferedImage transparentImage = ImageIO.read(new ByteArrayInputStream(transparentImageBytes));
 
-            // 4. 创建背景图
             Color backgroundColor = getColorByName(request.getBackground());
             int width = transparentImage.getWidth();
             int height = transparentImage.getHeight();
             BufferedImage finalImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-            // 5. 绘制背景 + 抠图人像
             Graphics2D g = finalImage.createGraphics();
             g.setColor(backgroundColor);
             g.fillRect(0, 0, width, height);
             g.drawImage(transparentImage, 0, 0, null);
             g.dispose();
 
-            // 6. 转回 Base64
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(finalImage, "jpg", baos);
             String resultBase64 = Base64.getEncoder().encodeToString(baos.toByteArray());
@@ -63,13 +55,74 @@ public class ImageController {
         }
     }
 
-    // 背景色映射
-    private Color getColorByName(String name) {
-        switch (name.toLowerCase()) {
-            case "blue": return new Color(0, 102, 204); // 深蓝
-            case "red": return new Color(220, 20, 60);  // 猩红
-            case "white":
-            default: return Color.WHITE;
+    /**
+     * 专用预览接口 - 快速处理
+     */
+    @PostMapping("/preview-idphoto")
+    public ImageResponse previewIdPhoto(@RequestBody EditImageRequest request) {
+        try {
+            if (request.getImage() == null || request.getImage().isEmpty()) {
+                return new ImageResponse("", "图片不能为空");
+            }
+
+            // 生成缓存键
+            String cacheKey = imageProcessingService.generateCacheKey(
+                    request.getImage(), request.getSize(),
+                    request.getBrightness(), request.getSmoothness(),
+                    request.getBgColor()
+            );
+
+            // 检查缓存
+            BufferedImage cachedImage = imageProcessingService.getCachedImage(cacheKey);
+            if (cachedImage != null) {
+                String resultBase64 = imageToBase64(cachedImage, "jpg", 0.7f);
+                return new ImageResponse("data:image/jpeg;base64," + resultBase64, "预览生成成功(缓存)");
+            }
+
+            // 去掉 Base64 前缀
+            String base64Image = request.getImage();
+            if (base64Image.contains(",")) base64Image = base64Image.split(",")[1];
+
+            // 腾讯抠图 - 获取透明背景的人像
+            byte[] transparentBytes = tencentClientService.getPortraitMask(base64Image);
+            BufferedImage transparentImage = ImageIO.read(new ByteArrayInputStream(transparentBytes));
+
+            BufferedImage processedImage;
+            if (Boolean.TRUE.equals(request.getPreviewMode())) {
+                // 预览模式：快速处理
+                processedImage = imageProcessingService.processForPreview(
+                        transparentImage,
+                        request.getSize(),
+                        request.getBrightness(),
+                        request.getSmoothness()
+                );
+            } else {
+                // 标准处理流程 - 保持 ARGB 格式处理
+                BufferedImage resizedImage = imageProcessingService.resizeImage(transparentImage, request.getSize(), true);
+                BufferedImage brightImage = imageProcessingService.adjustBrightness(resizedImage, request.getBrightness());
+                processedImage = imageProcessingService.applySmooth(brightImage, request.getSmoothness());
+            }
+
+            // 最后一步添加背景色
+            Color bgColor = parseColor(request.getBgColor());
+            BufferedImage finalImage = imageProcessingService.addBackground(processedImage, bgColor);
+
+            // 缓存结果
+            imageProcessingService.cacheImage(cacheKey, finalImage);
+
+            // 根据质量参数调整输出
+            float quality = getQualityFactor(request.getQuality());
+            String resultBase64 = imageToBase64(finalImage, "jpg", quality);
+
+            return new ImageResponse("data:image/jpeg;base64," + resultBase64, "预览生成成功");
+
+        } catch (OutOfMemoryError e) {
+            // 内存不足处理
+            System.gc();
+            return new ImageResponse("", "处理失败：内存不足，请尝试较小尺寸的图片");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ImageResponse("", "预览生成失败：" + e.getMessage());
         }
     }
 
@@ -84,37 +137,85 @@ public class ImageController {
             String base64Image = request.getImage();
             if (base64Image.contains(",")) base64Image = base64Image.split(",")[1];
 
-            // 腾讯抠图
+            // 腾讯抠图 - 获取透明背景的人像
             byte[] transparentBytes = tencentClientService.getPortraitMask(base64Image);
             BufferedImage transparentImage = ImageIO.read(new ByteArrayInputStream(transparentBytes));
 
-            // 调整尺寸
-            BufferedImage resizedImage = imageProcessingService.resizeImage(transparentImage, request.getSize());
-
-            // 调整亮度
+            // 高质量处理流水线 - 保持 ARGB 格式处理
+            BufferedImage resizedImage = imageProcessingService.resizeImage(transparentImage, request.getSize(), true);
             BufferedImage brightImage = imageProcessingService.adjustBrightness(resizedImage, request.getBrightness());
-
-            // 磨皮
             BufferedImage smoothImage = imageProcessingService.applySmooth(brightImage, request.getSmoothness());
 
-            // 添加背景色
+            // 最后一步添加背景色
             Color bgColor = parseColor(request.getBgColor());
-            BufferedImage finalImage = new BufferedImage(smoothImage.getWidth(), smoothImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D g = finalImage.createGraphics();
-            g.setColor(bgColor);
-            g.fillRect(0, 0, finalImage.getWidth(), finalImage.getHeight());
-            g.drawImage(smoothImage, 0, 0, null);
-            g.dispose();
+            BufferedImage finalImage = imageProcessingService.addBackground(smoothImage, bgColor);
 
-            // 转 Base64
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(finalImage, "jpg", baos);
-            String resultBase64 = Base64.getEncoder().encodeToString(baos.toByteArray());
+            // 高质量输出
+            String resultBase64 = imageToBase64(finalImage, "jpg", 0.9f);
 
             return new ImageResponse("data:image/jpeg;base64," + resultBase64, "生成成功");
 
+        } catch (OutOfMemoryError e) {
+            System.gc();
+            return new ImageResponse("", "处理失败：内存不足，请尝试较小尺寸的图片");
         } catch (Exception e) {
+            e.printStackTrace();
             return new ImageResponse("", "生成失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 添加背景色的辅助方法
+     */
+    /**
+     * 添加背景色
+     */
+    private BufferedImage addBackground(BufferedImage image, Color bgColor) {
+        return imageProcessingService.addBackground(image, bgColor);
+    }
+
+    /**
+     * 图像转Base64
+     */
+    private String imageToBase64(BufferedImage image, String format, float quality) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // 对于JPEG，可以设置压缩质量
+        if ("jpg".equalsIgnoreCase(format) || "jpeg".equalsIgnoreCase(format)) {
+            javax.imageio.ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
+            javax.imageio.ImageWriteParam param = writer.getDefaultWriteParam();
+            param.setCompressionMode(javax.imageio.ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionQuality(quality);
+
+            javax.imageio.stream.ImageOutputStream ios = javax.imageio.ImageIO.createImageOutputStream(baos);
+            writer.setOutput(ios);
+            writer.write(null, new javax.imageio.IIOImage(image, null, null), param);
+            writer.dispose();
+            ios.close();
+        } else {
+            ImageIO.write(image, format, baos);
+        }
+
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
+    }
+
+    /**
+     * 获取质量因子
+     */
+    private float getQualityFactor(String quality) {
+        switch (quality.toLowerCase()) {
+            case "quick": return 0.5f;
+            case "high": return 0.95f;
+            default: return 0.8f;
+        }
+    }
+
+    private Color getColorByName(String name) {
+        switch (name.toLowerCase()) {
+            case "blue": return new Color(0, 102, 204);
+            case "red": return new Color(220, 20, 60);
+            case "white":
+            default: return Color.WHITE;
         }
     }
 
@@ -124,6 +225,8 @@ public class ImageController {
             case "blue": return new Color(0, 102, 204);
             case "red": return new Color(220, 20, 60);
             case "green": return new Color(82, 196, 26);
+            case "gray": return new Color(128, 128, 128);
+            case "white": return Color.WHITE;
             default: return Color.WHITE;
         }
     }
