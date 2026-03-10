@@ -1,0 +1,124 @@
+
+.container.data-v-8b0659b4 {
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 顶部标题区 */
+.header.data-v-8b0659b4 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.app-title.data-v-8b0659b4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1890ff;
+}
+.subtitle.data-v-8b0659b4 {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 卡片 */
+.result-card.data-v-8b0659b4 {
+  width: 100%;
+  max-width: 420px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.card-title.data-v-8b0659b4 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #111;
+  margin-bottom: 12px;
+}
+
+/* 照片区域 */
+.photo-box.data-v-8b0659b4 {
+  border: 2px dashed #e0e0e0;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background-color: #fafafa;
+}
+.preview.data-v-8b0659b4 {
+  width: 100%;
+  height: auto;
+}
+.placeholder.data-v-8b0659b4 {
+  color: #aaa;
+  padding: 40px;
+}
+
+/* 按钮组 */
+.button-group.data-v-8b0659b4 {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.btn-action.data-v-8b0659b4 {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #1890ff;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-action.data-v-8b0659b4:active {
+  opacity: 0.85;
+  -webkit-transform: translateY(1px);
+          transform: translateY(1px);
+}
+.btn-action.data-v-8b0659b4:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+.btn-action.secondary.data-v-8b0659b4 {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+/* 分享提示 */
+.share-tips.data-v-8b0659b4 {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 4px solid #1890ff;
+}
+.tips-text.data-v-8b0659b4 {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 成功提示 */
+.success-toast.data-v-8b0659b4 {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  z-index: 9999;
+}
+

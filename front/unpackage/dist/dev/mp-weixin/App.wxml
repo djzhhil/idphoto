@@ -1,0 +1,1 @@
+<view class="content"><view class="logo"></view><view class="text-area"><navigator url="/pages/upload/upload"><button type="primary">前往证件照生成</button></navigator></view></view>

@@ -1,0 +1,6 @@
+
+.content {
+  text-align: center;
+  padding: 200rpx 0;
+}
+

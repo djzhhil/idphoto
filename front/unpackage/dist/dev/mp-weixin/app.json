@@ -1,0 +1,9 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/edit/edit",
+    "pages/result/result"
+  ],
+  "subPackages": [],
+  "usingComponents": {}
+}

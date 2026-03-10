@@ -1,0 +1,16 @@
+
+{
+  "name": "uni-idphoto",
+  "appid": "__UNI__STABLE",
+  "description": "证件照换背景小程序",
+  "versionName": "2.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "app-plus": {},
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false
+    }
+  }
+}

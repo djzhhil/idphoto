@@ -1,0 +1,135 @@
+
+.container.data-v-57280228 {
+  background-color: #f6f8fb;
+  min-height: 100vh;
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 顶部标题 */
+.header.data-v-57280228 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.app-title.data-v-57280228 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1890ff;
+}
+.subtitle.data-v-57280228 {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+/* 卡片样式 */
+.upload-card.data-v-57280228 {
+  width: 100%;
+  max-width: 420px;
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 18px 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 上传照片区域 */
+.photo-box.data-v-57280228 {
+  border: 2px dashed #cfd8dc;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+  background-color: #fafafa;
+  transition: all 0.3s;
+  overflow: hidden;
+  position: relative;
+}
+.photo-box.data-v-57280228:active {
+  opacity: 0.8;
+}
+.placeholder.data-v-57280228 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.upload-icon.data-v-57280228 {
+  font-size: 48px;
+  color: #1890ff;
+  margin-bottom: 8px;
+  font-weight: 200;
+}
+.upload-text.data-v-57280228 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 4px;
+}
+.upload-tip.data-v-57280228 {
+  font-size: 12px;
+  color: #999;
+}
+.preview.data-v-57280228 {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+}
+
+/* 按钮 */
+.btn-primary.data-v-57280228 {
+  width: 100%;
+  padding: 14px 0;
+  border-radius: 12px;
+  background-color: #1890ff;
+  color: #fff;
+  font-size: 16px;
+  letter-spacing: 1px;
+  box-shadow: 0 3px 10px rgba(24, 144, 255, 0.3);
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+.btn-primary.data-v-57280228:active {
+  opacity: 0.9;
+  -webkit-transform: translateY(1px);
+          transform: translateY(1px);
+}
+.btn-primary.data-v-57280228:disabled {
+  background-color: #ccc;
+  box-shadow: none;
+  color: #999;
+  -webkit-transform: none;
+          transform: none;
+}
+
+/* 使用提示 */
+.tips-section.data-v-57280228 {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border-left: 4px solid #1890ff;
+}
+.tips-title.data-v-57280228 {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+.tip-item.data-v-57280228 {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.tip-item.data-v-57280228:last-child {
+  margin-bottom: 0;
+}
+
