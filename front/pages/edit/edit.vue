@@ -47,17 +47,46 @@
         </view>
       </view>
 
+      <!-- H5 端使用下拉框 -->
+      <!-- #ifdef H5 -->
+      <view class="section">
+        <text class="section-title">证件照类型</text>
+        <picker mode="selector" :range="categories" range-key="label" @change="onCategoryChange">
+          <view class="picker">
+            {{ categories.find(c => c.value === selectedCategory)?.label || '请选择' }}
+          </view>
+        </picker>
+      </view>
+      <!-- #endif -->
+
+      <!-- 小程序端使用标签切换 -->
+      <!-- #ifdef MP-WEIXIN -->
+      <view class="section">
+        <text class="section-title">证件照类型</text>
+        <view class="category-options">
+          <view
+            v-for="category in categories"
+            :key="category.value"
+            :class="['category-btn', selectedCategory === category.value ? 'active' : '']"
+            @click="switchCategory(category.value)"
+          >
+            {{ category.label }}
+          </view>
+        </view>
+      </view>
+      <!-- #endif -->
+
       <!-- 尺寸选择 -->
       <view class="section">
         <text class="section-title">选择尺寸</text>
         <view class="size-options">
           <view
             v-for="size in sizes"
-            :key="size.value"
-            :class="['size-btn', selectedSize === size.value ? 'active' : '']"
+            :key="size.id"
+            :class="['size-btn', selectedSize === size.id ? 'active' : '']"
             @click="selectSize(size)"
           >
-            {{ size.label }}
+            {{ size.name }}
             <text class="size-dimension">{{ size.width }}×{{ size.height }}</text>
           </view>
         </view>
@@ -109,6 +138,7 @@
 
 <script>
 import request from "@/utils/request.js";
+import sizeApi from "@/utils/sizeApi.js";
 
 export default {
   data() {
@@ -123,11 +153,12 @@ export default {
         { label: "红色", value: "red", hex: "#dc143c" },
         { label: "灰色", value: "gray", hex: "#808080" }
       ],
-      sizes: [
-        { label: "一寸", value: "1inch", width: 295, height: 413, aspectRatio: 413/295 },
-        { label: "二寸", value: "2inch", width: 413, height: 579, aspectRatio: 579/413 },
-        { label: "小一寸", value: "small1inch", width: 260, height: 378, aspectRatio: 378/260 }
+      sizes: [],          // 从 API 加载
+      categories: [
+        { label: "常用规格", value: "common" },
+        { label: "特殊证件照", value: "special" }
       ],
+      selectedCategory: 'common',    // 当前分类
       selectedSize: "1inch",
       brightness: 50,
       smoothness: 0,
@@ -160,14 +191,78 @@ export default {
       this.bgColor = decodeURIComponent(options.bgColor);
     }
     
+    // 新增：加载规格
+    this.loadSizes();
+    
     // 页面加载后立即请求一次预览
     setTimeout(() => {
       this.requestServerPreview();
     }, 500);
   },
   methods: {
+    // 获取当前平台
+    getPlatform() {
+      const systemInfo = uni.getSystemInfoSync();
+      return systemInfo.platform;
+    },
+
+    // 判断是否是 H5
+    isH5() {
+      return this.getPlatform() === 'h5';
+    },
+
+    // 判断是否是小程序
+    isMP() {
+      return this.getPlatform() === 'mp-weixin';
+    },
+
+    // H5 端分类选择
+    onCategoryChange(e) {
+      const index = e.detail.value;
+      const category = this.categories[index];
+      this.switchCategory(category.value);
+    },
+
+    // 加载规格列表
+    async loadSizes() {
+      try {
+        const res = await sizeApi.getSizesByCategory(this.selectedCategory);
+        this.sizes = res || [];
+        // 如果有规格但还没有选中，则选中第一个
+        if (this.sizes.length > 0 && !this.selectedSize) {
+          this.selectedSize = this.sizes[0].id;
+        }
+      } catch (err) {
+        console.error('加载规格失败:', err);
+        this.sizes = this.getDefaultSizes();
+        // 加载失败时选中第一个默认规格
+        if (this.sizes.length > 0) {
+          this.selectedSize = this.sizes[0].id;
+        }
+      }
+    },
+
+    // 切换分类
+    switchCategory(category) {
+      this.selectedCategory = category;
+      this.loadSizes();
+      if (this.sizes.length > 0) {
+        this.selectedSize = this.sizes[0].id;
+      }
+      this.debouncePreview();
+    },
+
+    // 获取默认规格（降级方案）
+    getDefaultSizes() {
+      return [
+        { id: "1inch", name: "一寸", width: 295, height: 413 },
+        { id: "2inch", name: "二寸", width: 413, height: 579 },
+        { id: "small1inch", name: "小一寸", width: 260, height: 378 }
+      ];
+    },
+
     selectSize(size) {
-      this.selectedSize = size.value;
+      this.selectedSize = size.id;  // 使用 size.id
       this.debouncePreview();
     },
 
@@ -509,6 +604,23 @@ export default {
 .size-btn.active .size-dimension {
   color: rgba(255, 255, 255, 0.8);
 }
+.category-options {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.category-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  background-color: #f0f2f5;
+  color: #333;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.category-btn.active {
+  background-color: #1890ff;
+  color: #fff;
+}
 .btn-area {
   margin-top: 12px;
 }
@@ -530,4 +642,13 @@ export default {
   box-shadow: none;
   color: #999;
 }
+
+/* #ifdef H5 */
+.picker {
+  padding: 8px 12px;
+  background-color: #f0f2f5;
+  border-radius: 8px;
+  font-size: 14px;
+}
+/* #endif */
 </style>
