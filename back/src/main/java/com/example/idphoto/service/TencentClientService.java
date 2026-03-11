@@ -1,4 +1,4 @@
-package com.example.idphoto.services;
+package com.example.idphoto.service;
 
 import com.tencentcloudapi.bda.v20200324.BdaClient;
 import com.tencentcloudapi.bda.v20200324.models.SegmentPortraitPicRequest;

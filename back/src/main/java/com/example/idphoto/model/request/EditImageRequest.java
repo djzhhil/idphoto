@@ -1,5 +1,4 @@
-// EditImageRequest.java - 扩展原有请求类
-package com.example.idphoto.dto;
+package com.example.idphoto.model.request;
 
 public class EditImageRequest {
     private String image;

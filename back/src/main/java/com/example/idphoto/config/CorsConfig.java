@@ -1,4 +1,4 @@
-package com.example.idphoto.common;
+package com.example.idphoto.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

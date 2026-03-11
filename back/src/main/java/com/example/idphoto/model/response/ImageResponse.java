@@ -1,4 +1,4 @@
-package com.example.idphoto.dto;
+package com.example.idphoto.model.response;
 
 public class ImageResponse {
     private String resultImageBase64;
