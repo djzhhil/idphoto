@@ -29,6 +29,7 @@ back/src/main/resources/application.yml
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+/front/unpackage
 
 ### VS Code ###
 .vscode/

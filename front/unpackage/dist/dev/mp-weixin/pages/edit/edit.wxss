@@ -181,6 +181,23 @@
 .size-btn.active .size-dimension.data-v-0fa9cb46 {
   color: rgba(255, 255, 255, 0.8);
 }
+.category-options.data-v-0fa9cb46 {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.category-btn.data-v-0fa9cb46 {
+  padding: 6px 16px;
+  border-radius: 8px;
+  background-color: #f0f2f5;
+  color: #333;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.category-btn.active.data-v-0fa9cb46 {
+  background-color: #1890ff;
+  color: #fff;
+}
 .btn-area.data-v-0fa9cb46 {
   margin-top: 12px;
 }
@@ -202,4 +219,12 @@
   box-shadow: none;
   color: #999;
 }
+
+
+
+
+
+
+
+
 

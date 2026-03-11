@@ -24,10 +24,16 @@ public class TencentClientService {
 
     public byte[] getPortraitMask(String base64Image) {
         try {
+
+            // 去掉 data:image/...;base64, 前缀
+            if (base64Image != null && base64Image.contains(",")) {
+                base64Image = base64Image.substring(base64Image.indexOf(",") + 1);
+            }
+
             Credential cred = new Credential(secretId, secretKey);
 
             HttpProfile httpProfile = new HttpProfile();
-            httpProfile.setEndpoint("bda.tencentcloudapi.com"); // bda服务的endpoint
+            httpProfile.setEndpoint("bda.tencentcloudapi.com");
 
             ClientProfile clientProfile = new ClientProfile();
             clientProfile.setHttpProfile(httpProfile);
