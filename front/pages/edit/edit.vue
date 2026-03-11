@@ -220,7 +220,7 @@ export default {
       
       try {
         console.log('请求预览...');
-        const res = await request.post("/api/preview-idphoto", {
+        const res = await request.post("/api/idphoto/preview-idphoto", {
           image: this.imageUrl,
           size: this.selectedSize,
           brightness: this.brightness,
@@ -280,7 +280,7 @@ export default {
       
       try {
         console.log('生成最终图片...');
-        const res = await request.post("/api/generate-idphoto", {
+        const res = await request.post("/api/idphoto/generate-idphoto", {
           image: this.imageUrl,
           size: this.selectedSize,
           brightness: this.brightness,
