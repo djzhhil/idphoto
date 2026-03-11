@@ -10120,8 +10120,7 @@ var ENV = {
 };
 
 // 强制使用生产环境
-//const BASE_URL = ENV.prod.baseURL;
-
+var BASE_URL = ENV.local.baseURL;
 function handleResponse(res) {
   if (res.statusCode >= 200 && res.statusCode < 300) {
     return res.data; // 返回后端 JSON
@@ -10177,6 +10176,133 @@ var _default = {
         }
       });
     });
+  }
+};
+exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+
+/***/ }),
+/* 51 */
+/*!*****************************************************!*\
+  !*** F:/xiaochengxu/idphoto/front/utils/sizeApi.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(uni) {
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 39));
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 41));
+var _request = _interopRequireDefault(__webpack_require__(/*! @/utils/request.js */ 50));
+// 导入 request
+
+// 缓存键前缀
+var CACHE_KEY_PREFIX = 'idphoto_sizes_';
+var CACHE_EXPIRY = 30 * 60 * 1000; // 30分钟
+var _default = {
+  // 获取所有规格（带缓存）
+  getAllSizes: function getAllSizes() {
+    var _this = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
+      return _regenerator.default.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return _this._fetchWithCache('/api/idphoto/sizes', 'all');
+            case 2:
+              return _context.abrupt("return", _context.sent);
+            case 3:
+            case "end":
+              return _context.stop();
+          }
+        }
+      }, _callee);
+    }))();
+  },
+  // 按分类获取规格（带缓存）
+  getSizesByCategory: function getSizesByCategory(category) {
+    var _this2 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
+      return _regenerator.default.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return _this2._fetchWithCache('/api/idphoto/sizes/category/' + category, category);
+            case 2:
+              return _context2.abrupt("return", _context2.sent);
+            case 3:
+            case "end":
+              return _context2.stop();
+          }
+        }
+      }, _callee2);
+    }))();
+  },
+  // 请求并缓存
+  _fetchWithCache: function _fetchWithCache(url, cacheKey) {
+    var _this3 = this;
+    return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
+      var fullCacheKey, cached, res;
+      return _regenerator.default.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              fullCacheKey = CACHE_KEY_PREFIX + cacheKey; // 尝试从缓存读取
+              cached = _this3._getCached(fullCacheKey);
+              if (!cached) {
+                _context3.next = 5;
+                break;
+              }
+              console.log('从缓存读取规格:', cacheKey);
+              return _context3.abrupt("return", cached);
+            case 5:
+              _context3.prev = 5;
+              _context3.next = 8;
+              return _request.default.get(url);
+            case 8:
+              res = _context3.sent;
+              // 缓存结果
+              _this3._setCached(fullCacheKey, res);
+              return _context3.abrupt("return", res || []);
+            case 13:
+              _context3.prev = 13;
+              _context3.t0 = _context3["catch"](5);
+              console.error('获取规格失败:', _context3.t0);
+              return _context3.abrupt("return", []);
+            case 17:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3, null, [[5, 13]]);
+    }))();
+  },
+  // 获取缓存
+  _getCached: function _getCached(key) {
+    var cached = uni.getStorageSync(key);
+    if (cached) {
+      var data = JSON.parse(cached);
+      if (Date.now() - data.timestamp < CACHE_EXPIRY) {
+        return data.value;
+      }
+    }
+    return null;
+  },
+  // 设置缓存
+  _setCached: function _setCached(key, value) {
+    var data = {
+      timestamp: Date.now(),
+      value: value
+    };
+    uni.setStorageSync(key, JSON.stringify(data));
   }
 };
 exports.default = _default;

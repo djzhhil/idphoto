@@ -104,6 +104,8 @@ public class IdPhotoServiceImpl implements IIdPhotoService {
         }
 
         // 腾讯抠图 - 获取透明背景的人像
+        System.out.println("image length = " + base64Image.length());
+        System.out.println(base64Image.substring(0, 50));
         byte[] transparentBytes = tencentClientService.getPortraitMask(base64Image);
         BufferedImage transparentImage = ImageIO.read(new ByteArrayInputStream(transparentBytes));
 

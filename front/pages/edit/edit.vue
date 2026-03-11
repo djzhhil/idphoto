@@ -53,7 +53,7 @@
         <text class="section-title">证件照类型</text>
         <picker mode="selector" :range="categories" range-key="label" @change="onCategoryChange">
           <view class="picker">
-            {{ categories.find(c => c.value === selectedCategory)?.label || '请选择' }}
+            {{ categories.find(c => c.value === selectedCategory) ? categories.find(c => c.value === selectedCategory).label : '请选择' }}
           </view>
         </picker>
       </view>
@@ -228,24 +228,24 @@ export default {
       try {
         const res = await sizeApi.getSizesByCategory(this.selectedCategory);
         this.sizes = res || [];
-        // 如果有规格但还没有选中，则选中第一个
         if (this.sizes.length > 0 && !this.selectedSize) {
           this.selectedSize = this.sizes[0].id;
         }
+        return this.sizes
       } catch (err) {
         console.error('加载规格失败:', err);
         this.sizes = this.getDefaultSizes();
-        // 加载失败时选中第一个默认规格
         if (this.sizes.length > 0) {
           this.selectedSize = this.sizes[0].id;
         }
+        return this.sizes
       }
     },
 
     // 切换分类
-    switchCategory(category) {
+    async switchCategory(category) {
       this.selectedCategory = category;
-      this.loadSizes();
+      await this.loadSizes();
       if (this.sizes.length > 0) {
         this.selectedSize = this.sizes[0].id;
       }
@@ -393,10 +393,14 @@ export default {
         
         if (img) {
           uni.hideLoading();
-          // 使用 redirectTo 跳转到结果页面，关闭当前编辑页面
+        
+          // 存储base64图片（双端安全）
+          uni.setStorageSync("resultImage", img)
+        
           uni.redirectTo({
-            url: "/pages/result/result?image=" + encodeURIComponent(img),
+            url: "/pages/result/result"
           });
+        
         } else {
           uni.hideLoading();
           uni.showToast({ 

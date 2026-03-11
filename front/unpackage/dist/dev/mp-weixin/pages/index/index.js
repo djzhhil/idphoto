@@ -254,7 +254,9 @@ var _default = {
                 });
                 return _context.abrupt("return");
               case 13:
-                _context.next = 15;
+                // 将临时路径转换成 Base64
+                base64Data = '';
+                _context.next = 16;
                 return new Promise(function (resolve, reject) {
                   uni.getFileSystemManager().readFile({
                     filePath: tempFilePath,
@@ -267,11 +269,9 @@ var _default = {
                     }
                   });
                 });
-              case 15:
+              case 16:
                 base64Data = _context.sent;
-                // 添加前缀
                 _this.imageUrl = "data:image/jpeg;base64," + base64Data;
-                uni.hideLoading();
 
                 // 显示成功提示
                 uni.showToast({

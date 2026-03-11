@@ -44,11 +44,19 @@ export default {
       showSuccess: false
     };
   },
-  onLoad(option) {
-    if (option.image) {
-      this.resultImage = decodeURIComponent(option.image);
+  onLoad(options) {
+  
+    const cacheImage = uni.getStorageSync('resultImage')
+  
+    if (cacheImage) {
+      this.resultImage = cacheImage
+      uni.removeStorageSync('resultImage')
     }
-    console.log('结果页面加载，图片地址:', this.resultImage ? '有图片' : '无图片');
+    else if (options.image) {
+      this.resultImage = decodeURIComponent(options.image)
+    }
+  
+    console.log('结果页面加载，图片地址:', this.resultImage ? '有图片' : '无图片')
   },
   methods: {
     onImageLoad(e) {
@@ -58,82 +66,135 @@ export default {
     },
 
     async downloadImage() {
+    
       if (!this.resultImage) {
-        uni.showToast({ title: '图片未加载', icon: 'none' });
-        return;
+        uni.showToast({ title: '图片未加载', icon: 'none' })
+        return
       }
-
-      this.isDownloading = true;
-
+    
+      this.isDownloading = true
+    
       try {
-        // 如果是网络图片，先下载到本地
-        let tempFilePath = this.resultImage;
-        
+    
+        // ======================
+        // 微信小程序
+        // ======================
+        // #ifdef MP-WEIXIN
+    
+        let tempFilePath = this.resultImage
+    
         if (this.resultImage.startsWith('http')) {
+    
           const downloadRes = await uni.downloadFile({
             url: this.resultImage
-          });
-          
+          })
+    
           if (downloadRes.statusCode !== 200) {
-            throw new Error('下载失败');
+            throw new Error('下载失败')
           }
-          tempFilePath = downloadRes.tempFilePath;
-        } else if (this.resultImage.startsWith('data:')) {
-          // 如果是base64，先转换为临时文件
-          tempFilePath = await this.base64ToTempFile(this.resultImage);
+    
+          tempFilePath = downloadRes.tempFilePath
+    
+        } 
+        else if (this.resultImage.startsWith('data:')) {
+    
+          tempFilePath = await this.base64ToTempFile(this.resultImage)
+    
         }
-
-        // 保存到相册
-        await this.saveToAlbum(tempFilePath);
-        
-        this.showSuccess = true;
+    
+        await this.saveToAlbum(tempFilePath)
+    
+        this.showSuccess = true
         setTimeout(() => {
-          this.showSuccess = false;
-        }, 2000);
-        
+          this.showSuccess = false
+        }, 2000)
+    
+        // #endif
+    
+    
+        // ======================
+        // H5
+        // ======================
+        // #ifdef H5
+    
+        const link = document.createElement('a')
+    
+        link.href = this.resultImage
+        link.download = 'idphoto.jpg'
+    
+        document.body.appendChild(link)
+    
+        link.click()
+    
+        document.body.removeChild(link)
+    
+        uni.showToast({
+          title: '下载成功',
+          icon: 'success'
+        })
+    
+        // #endif
+    
+    
       } catch (error) {
-        console.error('保存失败:', error);
-        
-        // 处理权限问题
+    
+        console.error('保存失败:', error)
+    
+        // 小程序权限处理
         if (error.errMsg && error.errMsg.includes('auth deny')) {
+    
           uni.showModal({
             title: '需要相册权限',
             content: '请允许访问相册以保存图片',
             success: (res) => {
               if (res.confirm) {
-                this.openSetting();
+                this.openSetting()
               }
             }
-          });
+          })
+    
         } else {
-          uni.showToast({ 
-            title: '保存失败，请重试', 
-            icon: 'none',
-            duration: 2000
-          });
+    
+          uni.showToast({
+            title: '保存失败，请重试',
+            icon: 'none'
+          })
+    
         }
+    
       } finally {
-        this.isDownloading = false;
+    
+        this.isDownloading = false
+    
       }
+    
     },
 
     // Base64转临时文件
     base64ToTempFile(base64) {
+    
+      // #ifdef MP-WEIXIN
+    
       return new Promise((resolve, reject) => {
-        const fs = uni.getFileSystemManager();
-        const filePath = `${wx.env.USER_DATA_PATH}/temp_${Date.now()}.jpg`;
-        
-        // 去除base64前缀
-        const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
-        
+    
+        const fs = uni.getFileSystemManager()
+    
+        const filePath = `${wx.env.USER_DATA_PATH}/temp_${Date.now()}.jpg`
+    
+        const base64Data = base64.replace(/^data:image\/\w+;base64,/, '')
+    
         fs.writeFile({
           filePath: filePath,
           data: base64Data,
           encoding: 'base64',
           success: () => resolve(filePath),
           fail: reject
-        });
-      });
+        })
+    
+      })
+    
+      // #endif
+    
     },
 
     // 保存到相册

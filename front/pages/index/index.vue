@@ -98,18 +98,35 @@ export default {
         }
 
         // 将临时路径转换成 Base64
-        const base64Data = await new Promise((resolve, reject) => {
+        let base64Data = ''
+        
+        // #ifdef MP-WEIXIN
+        base64Data = await new Promise((resolve, reject) => {
           uni.getFileSystemManager().readFile({
             filePath: tempFilePath,
             encoding: 'base64',
             success: (res) => resolve(res.data),
             fail: (err) => reject(err)
-          });
-        });
-
-        // 添加前缀
-        this.imageUrl = "data:image/jpeg;base64," + base64Data;
-        uni.hideLoading();
+          })
+        })
+        this.imageUrl = "data:image/jpeg;base64," + base64Data
+        // #endif
+        
+        // #ifdef H5
+        base64Data = await new Promise((resolve, reject) => {
+          fetch(tempFilePath)
+            .then(res => res.blob())
+            .then(blob => {
+              const reader = new FileReader()
+              reader.onloadend = () => resolve(reader.result.split(',')[1])
+              reader.onerror = reject
+              reader.readAsDataURL(blob)
+            })
+            .catch(reject)
+        })
+        
+        this.imageUrl = "data:image/jpeg;base64," + base64Data
+        // #endif
         
         // 显示成功提示
         uni.showToast({ 
