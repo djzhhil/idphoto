@@ -8,7 +8,7 @@ const ENV = {
 };
 
 // 强制使用生产环境
-const BASE_URL = ENV.prod.baseURL;
+//const BASE_URL = ENV.prod.baseURL;
 
 function handleResponse(res) {
   if (res.statusCode >= 200 && res.statusCode < 300) {

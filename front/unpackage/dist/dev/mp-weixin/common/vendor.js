@@ -9558,9 +9558,9 @@ internalMixin(Vue);
 
 /***/ }),
 /* 26 */
-/*!****************************************************!*\
-  !*** F:/xiaochengxu/uni-idphoto-stable/pages.json ***!
-  \****************************************************/
+/*!***********************************************!*\
+  !*** F:/xiaochengxu/idphoto/front/pages.json ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9572,9 +9572,7 @@ internalMixin(Vue);
 /* 29 */,
 /* 30 */,
 /* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */
+/* 32 */
 /*!**********************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
   \**********************************************************************************************************/
@@ -9705,13 +9703,13 @@ function normalizeComponent (
 
 
 /***/ }),
+/* 33 */,
+/* 34 */,
 /* 35 */,
 /* 36 */,
 /* 37 */,
 /* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */
+/* 39 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
   \************************************************************************************************/
@@ -9720,11 +9718,11 @@ function normalizeComponent (
 
 // TODO(Babel 8): Remove this file.
 
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 42)();
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 40)();
 module.exports = runtime;
 
 /***/ }),
-/* 42 */
+/* 40 */
 /*!*******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
   \*******************************************************************/
@@ -10045,7 +10043,7 @@ function _regeneratorRuntime() {
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 43 */
+/* 41 */
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
   \*****************************************************************/
@@ -10085,18 +10083,18 @@ function _asyncToGenerator(fn) {
 module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
+/* 42 */,
+/* 43 */,
 /* 44 */,
 /* 45 */,
 /* 46 */,
 /* 47 */,
 /* 48 */,
 /* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */
-/*!**********************************************************!*\
-  !*** F:/xiaochengxu/uni-idphoto-stable/utils/request.js ***!
-  \**********************************************************/
+/* 50 */
+/*!*****************************************************!*\
+  !*** F:/xiaochengxu/idphoto/front/utils/request.js ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10122,7 +10120,8 @@ var ENV = {
 };
 
 // 强制使用生产环境
-var BASE_URL = ENV.prod.baseURL;
+//const BASE_URL = ENV.prod.baseURL;
+
 function handleResponse(res) {
   if (res.statusCode >= 200 && res.statusCode < 300) {
     return res.data; // 返回后端 JSON
