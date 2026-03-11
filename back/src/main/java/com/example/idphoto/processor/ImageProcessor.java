@@ -6,18 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 图像处理器 - 纯图像处理算法，无 Spring 依赖
+ * 图像处理器 - 支持依赖注入的图像处理
  */
 public class ImageProcessor {
 
-    private static final Map<String, Dimension> SIZE_MAP = new HashMap<>();
     private static final int MAX_CACHE_SIZE = 50;
 
-    static {
-        // 标准证件照尺寸 (300 DPI)
-        SIZE_MAP.put("1inch", new Dimension(295, 413)); // 一寸
-        SIZE_MAP.put("2inch", new Dimension(413, 579)); // 二寸
-        SIZE_MAP.put("small1inch", new Dimension(260, 378)); // 小一寸
+    // 注入证件照规格服务
+    private com.example.idphoto.service.IIdPhotoSizeService imageSizeService;
+
+    /**
+     * 设置证件照规格服务（用于依赖注入）
+     */
+    public void setImageSizeService(com.example.idphoto.service.IIdPhotoSizeService imageSizeService) {
+        this.imageSizeService = imageSizeService;
     }
 
     /**
@@ -27,11 +29,24 @@ public class ImageProcessor {
         if (image == null || sizeType == null) {
             return image;
         }
-        Dimension targetSize = SIZE_MAP.get(sizeType);
-        if (targetSize == null) {
-            targetSize = new Dimension(295, 413);
+
+        // 使用服务获取尺寸，如果不成功则使用默认值（一寸照片）
+        int targetWidth = 295;
+        int targetHeight = 413;
+
+        if (imageSizeService != null) {
+            Map<String, Integer> dimension = imageSizeService.getDimensionById(sizeType);
+            if (dimension != null) {
+                Integer width = dimension.get("width");
+                Integer height = dimension.get("height");
+                if (width != null && height != null) {
+                    targetWidth = width;
+                    targetHeight = height;
+                }
+            }
         }
-        return resizeImageWithCrop(image, targetSize.width, targetSize.height, keepAspectRatio);
+
+        return resizeImageWithCrop(image, targetWidth, targetHeight, keepAspectRatio);
     }
 
     /**
