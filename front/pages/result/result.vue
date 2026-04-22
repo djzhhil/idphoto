@@ -223,7 +223,7 @@ export default {
         delta: 2, // 返回两级，回到上传页面
         fail: () => {
           // 如果返回失败，直接跳转到首页
-          uni.reLaunch({
+          uni.switchTab({
             url: '/pages/dashboard/dashboard'
           });
         }
