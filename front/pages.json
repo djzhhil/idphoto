@@ -1,10 +1,15 @@
-
 {
   "pages": [
     {
-      "path": "pages/index/index",
+      "path": "pages/dashboard/dashboard",
       "style": {
-        "navigationBarTitleText": "证件照生成"
+        "navigationBarTitleText": "底色通"
+      }
+    },
+    {
+      "path": "pages/upload/upload",
+      "style": {
+        "navigationBarTitleText": "证件照换底"
       }
     },
     {

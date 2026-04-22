@@ -224,7 +224,7 @@ export default {
         fail: () => {
           // 如果返回失败，直接跳转到首页
           uni.reLaunch({
-            url: '/pages/index/index'
+            url: '/pages/dashboard/dashboard'
           });
         }
       });
@@ -234,7 +234,7 @@ export default {
     onShareAppMessage() {
       return {
         title: '智能证件照 - 一键生成专业证件照',
-        path: '/pages/index/index',
+        path: '/pages/dashboard/dashboard',
         imageUrl: this.resultImage
       };
     },
