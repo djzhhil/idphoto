@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="header">
-      <text class="app-title">底色通 · 智能证件照</text>
+      <text class="app-title">Arise换底色 · 智能证件照</text>
       <text class="subtitle">调整亮度与磨皮，预览效果</text>
     </view>
 

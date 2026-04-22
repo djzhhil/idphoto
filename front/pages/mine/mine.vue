@@ -2,52 +2,28 @@
   <view class="container">
     <!-- 顶部标题 -->
     <view class="header">
-      <text class="app-title">Arise换底色</text>
-      <text class="subtitle">智能图像处理工具集</text>
+      <text class="app-title">我的</text>
+      <text class="subtitle">个人中心</text>
     </view>
 
     <!-- 功能卡片区域 -->
     <view class="cards-container">
-      <!-- 卡片1：证件照换底 -->
-      <view class="feature-card" @click="navigateToUpload">
+      <!-- 历史记录卡片 -->
+      <view class="feature-card" @click="viewHistory">
         <view class="card-icon">
-          <text class="icon-text">📷</text>
+          <text class="icon-text">📋</text>
         </view>
         <view class="card-content">
-          <text class="card-title">证件照换底</text>
-          <text class="card-desc">一键更换证件照底色，支持白/蓝/红/灰</text>
+          <text class="card-title">历史记录</text>
+          <text class="card-desc">查看您的证件照制作历史</text>
         </view>
         <view class="card-arrow">›</view>
-      </view>
-
-      <!-- 卡片2：图片尺寸裁剪 -->
-      <view class="feature-card coming-soon" @click="showComingSoon">
-        <view class="card-icon">
-          <text class="icon-text">✂️</text>
-        </view>
-        <view class="card-content">
-          <text class="card-title">图片尺寸裁剪</text>
-          <text class="card-desc">智能裁剪为标准证件照尺寸</text>
-        </view>
-        <view class="card-badge">开发中</view>
-      </view>
-
-      <!-- 卡片3：更多 AI 效率工具 -->
-      <view class="feature-card coming-soon" @click="showComingSoon">
-        <view class="card-icon">
-          <text class="icon-text">🤖</text>
-        </view>
-        <view class="card-content">
-          <text class="card-title">更多 AI 效率工具</text>
-          <text class="card-desc">智能抠图、背景虚化等功能</text>
-        </view>
-        <view class="card-badge">敬请期待</view>
       </view>
     </view>
 
     <!-- 底部提示 -->
     <view class="footer-tips">
-      <text class="tip-text">💡 点击上方卡片开始使用功能</text>
+      <text class="tip-text">💡 暂无历史记录</text>
     </view>
   </view>
 </template>
@@ -58,14 +34,9 @@ export default {
     return {}
   },
   methods: {
-    navigateToUpload() {
-      uni.navigateTo({
-        url: '/pages/upload/upload'
-      })
-    },
-    showComingSoon() {
+    viewHistory() {
       uni.showToast({
-        title: '功能开发中，敬请期待',
+        title: '历史记录功能开发中',
         icon: 'none',
         duration: 2000
       })
@@ -128,9 +99,6 @@ export default {
   transform: translateY(2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
-.feature-card.coming-soon {
-  opacity: 0.7;
-}
 
 /* 卡片图标 */
 .card-icon {
@@ -171,18 +139,6 @@ export default {
   font-size: 24px;
   color: #d9d9d9;
   margin-left: 8px;
-}
-
-/* 开发中标签 */
-.card-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 4px 10px;
-  background-color: #f0f0f0;
-  color: #999;
-  font-size: 11px;
-  border-radius: 12px;
 }
 
 /* 底部提示 */
