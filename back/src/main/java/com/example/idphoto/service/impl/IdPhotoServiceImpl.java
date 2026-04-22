@@ -103,26 +103,35 @@ public class IdPhotoServiceImpl implements IIdPhotoService {
             base64Image = base64Image.split(",")[1];
         }
 
-        // 腾讯抠图 - 获取透明背景的人像
-        System.out.println("image length = " + base64Image.length());
-        System.out.println(base64Image.substring(0, 50));
-        byte[] transparentBytes = tencentClientService.getPortraitMask(base64Image);
-        BufferedImage transparentImage = ImageIO.read(new ByteArrayInputStream(transparentBytes));
+        BufferedImage sourceImage;
+        
+        // 判断是否为裁剪模式
+        if ("crop".equals(request.getMode())) {
+            // 裁剪模式：直接使用原图，跳过抠图步骤
+            System.out.println("裁剪模式：跳过抠图，直接处理原图");
+            sourceImage = ImageIO.read(new ByteArrayInputStream(java.util.Base64.getDecoder().decode(base64Image)));
+        } else {
+            // 普通模式：调用腾讯抠图 API
+            System.out.println("image length = " + base64Image.length());
+            System.out.println(base64Image.substring(0, 50));
+            byte[] transparentBytes = tencentClientService.getPortraitMask(base64Image);
+            sourceImage = ImageIO.read(new ByteArrayInputStream(transparentBytes));
+        }
 
         BufferedImage processedImage;
         if (isPreview) {
             // 预览模式：快速处理
             processedImage = imageProcessor.processForPreview(
-                    transparentImage, request.getSize(),
+                    sourceImage, request.getSize(),
                     request.getBrightness(), request.getSmoothness());
         } else {
             // 标准处理流程
-            BufferedImage resizedImage = imageProcessor.resizeImage(transparentImage, request.getSize(), true);
+            BufferedImage resizedImage = imageProcessor.resizeImage(sourceImage, request.getSize(), true);
             BufferedImage brightImage = imageProcessor.adjustBrightness(resizedImage, request.getBrightness());
             processedImage = imageProcessor.applySmooth(brightImage, request.getSmoothness());
         }
 
-        // 添加背景色
+        // 添加背景色（裁剪模式下也保留此步骤，因为用户上传的可能已经是带背景的证件照）
         Color bgColor = ColorUtils.parseColor(request.getBgColor());
         return imageProcessor.addBackground(processedImage, bgColor);
     }

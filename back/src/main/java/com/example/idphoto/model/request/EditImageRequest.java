@@ -9,6 +9,7 @@ public class EditImageRequest {
     private Boolean previewMode = false;
     private Boolean finalMode = false;
     private String quality = "standard"; // quick, standard, high
+    private String mode = "edit"; // edit: 普通换底模式, crop: 裁剪模式
 
     // getters and setters
     public String getImage() { return image; }
@@ -27,4 +28,6 @@ public class EditImageRequest {
     public void setFinalMode(Boolean finalMode) { this.finalMode = finalMode; }
     public String getQuality() { return quality; }
     public void setQuality(String quality) { this.quality = quality; }
+    public String getMode() { return mode; }
+    public void setMode(String mode) { this.mode = mode; }
 }

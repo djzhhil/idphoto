@@ -41,12 +41,17 @@ export default {
       imageUrl: '',
       bgColor: 'white',
       photoHeight: 280,
-      isProcessing: false
+      isProcessing: false,
+      mode: '' // 模式：普通换底或裁剪
     }
   },
-  onLoad() {
+  onLoad(options) {
     // 页面加载时初始化
     this.calculatePhotoHeight();
+    // 接收 mode 参数
+    if (options.mode) {
+      this.mode = options.mode;
+    }
   },
   onShow() {
     // 页面显示时重新计算高度，确保布局正确
@@ -184,8 +189,18 @@ export default {
         // 添加一个短暂的延迟，让用户看到处理状态
         await new Promise(resolve => setTimeout(resolve, 500));
         
+        // 构建跳转 URL，根据模式传递不同参数
+        let url = `/pages/edit/edit?image=${encodeURIComponent(this.imageUrl)}`;
+        
+        // 如果是裁剪模式，不传 bgColor
+        if (this.mode === 'crop') {
+          url += `&mode=crop`;
+        } else {
+          url += `&bgColor=${encodeURIComponent(this.bgColor)}`;
+        }
+        
         uni.navigateTo({
-          url: `/pages/edit/edit?image=${encodeURIComponent(this.imageUrl)}&bgColor=${encodeURIComponent(this.bgColor)}`
+          url: url
         });
       } catch (error) {
         console.error('导航失败:', error);

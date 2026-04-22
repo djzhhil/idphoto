@@ -1,8 +1,8 @@
 <template>
   <view class="container">
     <view class="header">
-      <text class="app-title">Arise换底色 · 智能证件照</text>
-      <text class="subtitle">调整亮度与磨皮，预览效果</text>
+      <text class="app-title">{{ isCropMode ? '图片尺寸裁剪' : 'Arise换底色 · 智能证件照' }}</text>
+      <text class="subtitle">{{ isCropMode ? '选择目标尺寸，自动裁剪' : '调整亮度与磨皮，预览效果' }}</text>
     </view>
 
     <view class="card edit-card">
@@ -31,8 +31,8 @@
         <text class="status-text" v-else>预览已更新</text>
       </view>
 
-      <!-- 背景色选择 -->
-      <view class="section">
+      <!-- 背景色选择 - 裁剪模式隐藏 -->
+      <view v-if="!isCropMode" class="section">
         <text class="section-title">背景颜色</text>
         <view class="color-options">
           <view
@@ -47,9 +47,9 @@
         </view>
       </view>
 
-      <!-- H5 端使用下拉框 -->
+      <!-- H5 端使用下拉框 - 裁剪模式隐藏 -->
       <!-- #ifdef H5 -->
-      <view class="section">
+      <view v-if="!isCropMode" class="section">
         <text class="section-title">证件照类型</text>
         <picker mode="selector" :range="categories" range-key="label" @change="onCategoryChange">
           <view class="picker">
@@ -59,9 +59,9 @@
       </view>
       <!-- #endif -->
 
-      <!-- 小程序端使用标签切换 -->
+      <!-- 小程序端使用标签切换 - 裁剪模式隐藏 -->
       <!-- #ifdef MP-WEIXIN -->
-      <view class="section">
+      <view v-if="!isCropMode" class="section">
         <text class="section-title">证件照类型</text>
         <view class="category-options">
           <view
@@ -92,8 +92,8 @@
         </view>
       </view>
 
-      <!-- 亮度调整 -->
-      <view class="section">
+      <!-- 亮度调整 - 裁剪模式隐藏 -->
+      <view v-if="!isCropMode" class="section">
         <view class="label-row">
           <text class="section-title">亮度调整</text>
           <text class="slider-value">{{ brightness }}%</text>
@@ -109,8 +109,8 @@
         />
       </view>
 
-      <!-- 磨皮调整 -->
-      <view class="section">
+      <!-- 磨皮调整 - 裁剪模式隐藏 -->
+      <view v-if="!isCropMode" class="section">
         <view class="label-row">
           <text class="section-title">磨皮程度</text>
           <text class="slider-value">{{ smoothness }}</text>
@@ -129,7 +129,7 @@
       <!-- 底部按钮 -->
       <view class="btn-area">
         <button class="btn-primary" @click="generateFinalImage" :disabled="isProcessing">
-          {{ isProcessing ? '生成中...' : '生成证件照' }}
+          {{ isProcessing ? '生成中...' : (isCropMode ? '开始裁剪' : '生成证件照') }}
         </button>
       </view>
     </view>
@@ -146,6 +146,8 @@ export default {
       imageUrl: "",
       serverPreviewUrl: "",
       isProcessing: false,
+      mode: '', // 模式：普通换底或裁剪
+      isCropMode: false, // 是否为裁剪模式
       // 背景颜色选项
       bgColors: [
         { label: "白色", value: "white", hex: "#ffffff" },
@@ -169,6 +171,12 @@ export default {
   },
   onLoad(options) {
     console.log('页面加载，参数:', options);
+    
+    // 接收 mode 参数
+    if (options.mode) {
+      this.mode = options.mode;
+      this.isCropMode = (options.mode === 'crop');
+    }
     
     if (options.image) {
       this.imageUrl = decodeURIComponent(options.image);
@@ -315,7 +323,7 @@ export default {
       
       try {
         console.log('请求预览...');
-        const res = await request.post("/api/idphoto/preview-idphoto", {
+        const requestData = {
           image: this.imageUrl,
           size: this.selectedSize,
           brightness: this.brightness,
@@ -323,7 +331,14 @@ export default {
           bgColor: this.bgColor,
           previewMode: true,
           quality: "standard"
-        });
+        };
+        
+        // 如果是裁剪模式，添加 mode 参数
+        if (this.isCropMode) {
+          requestData.mode = 'crop';
+        }
+        
+        const res = await request.post("/api/idphoto/preview-idphoto", requestData);
         
         if (res && res.imageBase64) {
           this.serverPreviewUrl = res.imageBase64;
@@ -375,14 +390,21 @@ export default {
       
       try {
         console.log('生成最终图片...');
-        const res = await request.post("/api/idphoto/generate-idphoto", {
+        const requestData = {
           image: this.imageUrl,
           size: this.selectedSize,
           brightness: this.brightness,
           smoothness: this.smoothness,
           bgColor: this.bgColor,
           quality: "high"
-        });
+        };
+        
+        // 如果是裁剪模式，添加 mode 参数
+        if (this.isCropMode) {
+          requestData.mode = 'crop';
+        }
+        
+        const res = await request.post("/api/idphoto/generate-idphoto", requestData);
         
         let img = null;
         if (res && res.imageBase64) {

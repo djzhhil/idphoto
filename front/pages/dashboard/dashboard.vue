@@ -21,7 +21,7 @@
       </view>
 
       <!-- 卡片2：图片尺寸裁剪 -->
-      <view class="feature-card coming-soon" @click="showComingSoon">
+      <view class="feature-card" @click="navigateToCrop">
         <view class="card-icon">
           <text class="icon-text">✂️</text>
         </view>
@@ -29,7 +29,7 @@
           <text class="card-title">图片尺寸裁剪</text>
           <text class="card-desc">智能裁剪为标准证件照尺寸</text>
         </view>
-        <view class="card-badge">开发中</view>
+        <view class="card-arrow">›</view>
       </view>
 
       <!-- 卡片3：更多 AI 效率工具 -->
@@ -61,6 +61,11 @@ export default {
     navigateToUpload() {
       uni.navigateTo({
         url: '/pages/upload/upload'
+      })
+    },
+    navigateToCrop() {
+      uni.navigateTo({
+        url: '/pages/upload/upload?mode=crop'
       })
     },
     showComingSoon() {
