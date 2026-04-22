@@ -3,7 +3,7 @@ const ENV = {
     baseURL: "http://localhost:8081", // 本地测试
   },
   prod: {
-    baseURL: "https://ipdhoto-kqffcqgbmb.cn-chengdu.fcapp.run", // 线上
+    baseURL: "https://idphoto.scserver.store:56465", // 线上
   },
 };
 
