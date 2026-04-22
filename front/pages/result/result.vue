@@ -2,7 +2,7 @@
   <view class="container">
     <!-- 顶部标题区 -->
     <view class="header">
-      <text class="app-title">底色通 · 智能证件照</text>
+      <text class="app-title">Arise换底色 · 智能证件照</text>
       <text class="subtitle">请确认照片效果并保存</text>
     </view>
 
