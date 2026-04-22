@@ -10115,12 +10115,12 @@ var ENV = {
   },
 
   prod: {
-    baseURL: "https://idphoto-kqffccmbmb.cn-hangzhou.fcapp.run" // 线上
+    baseURL: "https://ipdhoto-kqffcqgbmb.cn-chengdu.fcapp.run" // 线上
   }
 };
 
 // 强制使用生产环境
-var BASE_URL = ENV.local.baseURL;
+var BASE_URL = ENV.prod.baseURL;
 function handleResponse(res) {
   if (res.statusCode >= 200 && res.statusCode < 300) {
     return res.data; // 返回后端 JSON
