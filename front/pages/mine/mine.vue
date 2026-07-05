@@ -35,11 +35,9 @@ export default {
   },
   methods: {
     viewHistory() {
-      uni.showToast({
-        title: '历史记录功能开发中',
-        icon: 'none',
-        duration: 2000
-      })
+      uni.navigateTo({
+        url: '/pages/orders/orders'
+      });
     }
   }
 }

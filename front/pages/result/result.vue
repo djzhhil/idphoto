@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import orderApi from "@/utils/orderApi.js";
+
 export default {
   data() {
     return {
@@ -45,18 +47,24 @@ export default {
     };
   },
   onLoad(options) {
-  
-    const cacheImage = uni.getStorageSync('resultImage')
-  
+    // Order mode: orderNo + token
+    if (options.orderNo && options.token) {
+      this.resultImage = orderApi.getDownloadUrl(options.orderNo, options.token);
+      console.log('订单模式加载图片:', this.resultImage);
+      return;
+    }
+
+    // Legacy mode: local storage
+    const cacheImage = uni.getStorageSync('resultImage');
     if (cacheImage) {
-      this.resultImage = cacheImage
-      uni.removeStorageSync('resultImage')
+      this.resultImage = cacheImage;
+      uni.removeStorageSync('resultImage');
     }
     else if (options.image) {
-      this.resultImage = decodeURIComponent(options.image)
+      this.resultImage = decodeURIComponent(options.image);
     }
   
-    console.log('结果页面加载，图片地址:', this.resultImage ? '有图片' : '无图片')
+    console.log('结果页面加载，图片地址:', this.resultImage ? '有图片' : '无图片');
   },
   methods: {
     onImageLoad(e) {

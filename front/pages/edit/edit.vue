@@ -139,6 +139,7 @@
 <script>
 import request from "@/utils/request.js";
 import sizeApi from "@/utils/sizeApi.js";
+import orderApi from "@/utils/orderApi.js";
 
 export default {
   data() {
@@ -404,29 +405,17 @@ export default {
           requestData.mode = 'crop';
         }
         
-        const res = await request.post("/api/idphoto/generate-idphoto", requestData);
+        const res = await orderApi.createOrder(requestData);
         
-        let img = null;
-        if (res && res.imageBase64) {
-          img = res.imageBase64;
-        } else if (res && res.resultImageBase64) {
-          img = res.resultImageBase64;
-        }
-        
-        if (img) {
+        if (res && res.orderNo) {
           uni.hideLoading();
-        
-          // 存储base64图片（双端安全）
-          uni.setStorageSync("resultImage", img)
-        
           uni.redirectTo({
-            url: "/pages/result/result"
+            url: "/pages/pay/pay?orderNo=" + res.orderNo
           });
-        
         } else {
           uni.hideLoading();
           uni.showToast({ 
-            title: res?.message || "生成失败，请重试", 
+            title: res?.message || "创建订单失败，请重试", 
             icon: "none",
             duration: 3000
           });
